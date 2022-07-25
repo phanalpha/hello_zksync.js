@@ -38,3 +38,9 @@ export async function run(f: (_: Zoo) => Promise<void>) {
     log: logj,
   });
 }
+
+export function inject(f: (...args: any[]) => Promise<void>) {
+  return async function (...args: any[]) {
+    await run(z => f(z, ...args));
+  };
+}
