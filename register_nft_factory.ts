@@ -22,7 +22,7 @@ export async function registerNFTFactory(
   wallet: Wallet,
   provider: Provider,
 ) {
-  const w = await RWallet.fromEthSigner(wallet, provider);
+  const w = await RWallet.fromEthSigner(wallet as any, provider);
   const { signature, accountId, accountAddress } = await w.signRegisterFactory(contract.address);
 
   return contract.registerNFTFactory(accountId, accountAddress, signature.signature);

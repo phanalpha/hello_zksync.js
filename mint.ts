@@ -1,17 +1,19 @@
-import { Wallet } from 'ethers';
+import { BigNumberish, Wallet } from 'ethers';
 import { Provider, Wallet as RWallet } from '@alonfalsing/realloop';
 
 export async function mint(
   contentHash: string,
+  permanentId: BigNumberish,
   recipient: Wallet,
   creator: Wallet,
   provider: Provider,
 ) {
-  const w = await RWallet.fromEthSigner(creator, provider);
+  const w = await RWallet.fromEthSigner(creator as any, provider);
 
   return w.mintNFT({
     recipient: recipient.address,
     contentHash,
+    permanentId,
     feeToken: 'ETH',
   });
 }

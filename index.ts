@@ -8,9 +8,17 @@ import { mint } from './mint';
 import { withdrawNFT } from './withdraw_nft';
 import { list } from './list';
 import { swap } from './swap';
+import { getAccountState } from './state';
 
 (async function () {
   const program = new Command('r');
+
+  program.command('wallets')
+    .action(inject(async function ({ wallets }) {
+      for (const w of wallets) {
+        console.log(w.address);
+      }
+    }));
 
   program.command('deposit <amount> <wallets...>')
     .action(inject(async function ({ wallets, provider, log }, amount, is) {
@@ -40,9 +48,9 @@ import { swap } from './swap';
       log(r);
     }));
 
-  program.command('mint <content-hash> <recipient> <creator>')
-    .action(inject(async function ({ wallets, provider, log }, content_hash, recipient, creator) {
-      const tx = await mint(content_hash, wallets[recipient], wallets[creator], provider);
+  program.command('mint <content-hash> <permanent-id> <recipient> <creator>')
+    .action(inject(async function ({ wallets, provider, log }, content_hash, permanent_id, recipient, creator) {
+      const tx = await mint(content_hash, permanent_id, wallets[recipient], wallets[creator], provider);
       const r = await tx.awaitReceipt();
 
       log(r);
@@ -54,6 +62,13 @@ import { swap } from './swap';
       const r = await tx.awaitReceipt();
 
       log(r);
+    }));
+
+  program.command('state <wallet>')
+    .action(inject(async function ({ wallets, provider, log }, i) {
+      const s = await getAccountState(wallets[i], provider);
+
+      log(s);
     }));
 
   program.command('balance-of <address> <wallet>')

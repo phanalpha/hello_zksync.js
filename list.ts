@@ -31,7 +31,7 @@ export async function getOrder(wallet: RWallet, bid: boolean, token: number, pri
 }
 
 export async function list(wallet: Wallet, bid: boolean, token: number, price: number, { provider, log }: Zoo) {
-  const w = await RWallet.fromEthSigner(wallet, provider);
+  const w = await RWallet.fromEthSigner(wallet as any, provider);
   const o = await getOrder(w, bid, token, price);
   log(o);
 

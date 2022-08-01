@@ -1,5 +1,5 @@
 import { Wallet } from 'ethers';
-import { Provider, Wallet as RWallet, utils } from '@alonfalsing/realloop';
+import { Wallet as RWallet } from '@alonfalsing/realloop';
 
 import { getOrder } from './list';
 import { Zoo } from './run';
@@ -12,13 +12,13 @@ export async function swap(
   price: number,
   { provider, log }: Zoo,
 ) {
-  const ask = await getOrder(await RWallet.fromEthSigner(seller, provider), false, token, price);
+  const ask = await getOrder(await RWallet.fromEthSigner(seller as any, provider), false, token, price);
   log(ask);
 
-  const bid = await getOrder(await RWallet.fromEthSigner(buyer, provider), true, token, price);
+  const bid = await getOrder(await RWallet.fromEthSigner(buyer as any, provider), true, token, price);
   log(bid);
 
-  const w = await RWallet.fromEthSigner(submitter, provider);
+  const w = await RWallet.fromEthSigner(submitter as any, provider);
   const tx = await w.syncSwap({
     orders: [ask, bid],
     feeToken: 'ETH',
