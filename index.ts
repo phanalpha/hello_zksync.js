@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 
 import { inject } from './run';
+import { enter } from './enter';
 import { deposit } from './deposit';
 import { changePubKey } from './change_pub_key';
 import { deploy } from './register_nft_factory';
@@ -20,6 +21,16 @@ import { getAccountState } from './state';
       }
     }));
 
+  program.command('enter <wallets...>')
+    .action(inject(async function ({ wallets, provider, log }, is) {
+      for (const i of is) {
+        const tx = await enter(wallets[i], provider);
+        const r = await tx.awaitReceipt();
+
+        log(r);
+      }
+    }));
+
   program.command('deposit <amount> <wallets...>')
     .action(inject(async function ({ wallets, provider, log }, amount, is) {
       for (const i of is) {
@@ -30,10 +41,11 @@ import { getAccountState } from './state';
       }
     }));
 
-  program.command('change-pub-key <wallets...>')
-    .action(inject(async function ({ wallets, provider, log }, is) {
+  program.command('change-pubkey <wallets...>')
+    .option('--fee <fee>')
+    .action(inject(async function ({ wallets, provider, log }, is, opts) {
       for (const i of is) {
-        const tx = await changePubKey(wallets[i], provider);
+        const tx = await changePubKey(wallets[i], provider, opts);
         const r = await tx.awaitReceipt();
 
         log(r);
@@ -49,16 +61,18 @@ import { getAccountState } from './state';
     }));
 
   program.command('mint <content-hash> <permanent-id> <recipient> <creator>')
-    .action(inject(async function ({ wallets, provider, log }, content_hash, permanent_id, recipient, creator) {
-      const tx = await mint(content_hash, permanent_id, wallets[recipient], wallets[creator], provider);
+    .option('--fee <fee>')
+    .action(inject(async function ({ wallets, provider, log }, content_hash, permanent_id, recipient, creator, opts) {
+      const tx = await mint(content_hash, permanent_id, wallets[recipient], wallets[creator], provider, opts);
       const r = await tx.awaitReceipt();
 
       log(r);
     }));
 
   program.command('withdraw-nft <token> <wallet>')
-    .action(inject(async function ({ wallets, provider, log }, token, i) {
-      const tx = await withdrawNFT(parseInt(token), wallets[i], provider);
+    .option('--fee <fee>')
+    .action(inject(async function ({ wallets, provider, log }, token, i, opts) {
+      const tx = await withdrawNFT(parseInt(token), wallets[i], provider, opts);
       const r = await tx.awaitReceipt();
 
       log(r);

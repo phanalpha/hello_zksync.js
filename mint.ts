@@ -7,10 +7,12 @@ export async function mint(
   recipient: Wallet,
   creator: Wallet,
   provider: Provider,
+  opts?: { fee?: BigNumberish },
 ) {
   const w = await RWallet.fromEthSigner(creator as any, provider);
 
   return w.mintNFT({
+    ...opts,
     recipient: recipient.address,
     contentHash,
     permanentId,
